@@ -44,13 +44,46 @@ class SubtitleWindow(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
         
+        # 创建文本布局
+        text_layout = QVBoxLayout()
+        text_layout.setContentsMargins(20, 10, 20, 10)
+        
+        # 创建文本显示区域
+        self.text_edit = QTextEdit()
+        self.text_edit.setAlignment(Qt.AlignCenter)
+        self.background_opacity = 180  # 默认背景透明度
+        self.update_text_edit_style()
+        # 修复：使用正确的 WordWrap 模式
+        from PyQt5.QtGui import QTextOption
+        self.text_edit.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
+        
+        text_layout.addWidget(self.text_edit)
+        main_layout.addLayout(text_layout)
+        
+        # 创建高度调整条
+        self.height_handle = QFrame()
+        self.height_handle.setObjectName("heightHandle")
+        self.height_handle.setFixedHeight(8)
+        self.height_handle.setCursor(Qt.SizeVerCursor)
+        self.height_handle.setStyleSheet("""
+            #heightHandle {
+                background-color: rgba(100, 100, 100, 120);
+                border-top: 1px solid rgba(255, 255, 255, 30);
+                border-bottom: 1px solid rgba(255, 255, 255, 30);
+            }
+            #heightHandle:hover {
+                background-color: rgba(100, 100, 100, 180);
+            }
+        """)
+        main_layout.addWidget(self.height_handle)
+        
         # 创建控制面板容器
         self.control_panel = QFrame()
         self.control_panel.setObjectName("controlPanel")
         self.control_panel.setStyleSheet("""
             #controlPanel {
                 background-color: rgba(0, 0, 0, 120);
-                border-bottom: 1px solid rgba(255, 255, 255, 30);
+                border-top: 1px solid rgba(255, 255, 255, 30);
             }
         """)
         
@@ -201,22 +234,6 @@ class SubtitleWindow(QWidget):
         control_layout.addWidget(self.hide_btn)
         
         main_layout.addWidget(self.control_panel)
-        
-        # 创建文本布局
-        text_layout = QVBoxLayout()
-        text_layout.setContentsMargins(20, 10, 20, 20)
-        
-        # 创建文本显示区域
-        self.text_edit = QTextEdit()
-        self.text_edit.setAlignment(Qt.AlignCenter)
-        self.background_opacity = 180  # 默认背景透明度
-        self.update_text_edit_style()
-        # 修复：使用正确的 WordWrap 模式
-        from PyQt5.QtGui import QTextOption
-        self.text_edit.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
-        
-        text_layout.addWidget(self.text_edit)
-        main_layout.addLayout(text_layout)
         self.setLayout(main_layout)
         
         # 文本历史记录
@@ -362,8 +379,16 @@ class SubtitleWindow(QWidget):
         self.text_edit.setStyleSheet(new_style)
     
     def mousePressEvent(self, event):
-        """鼠标按下事件，用于移动窗口"""
+        """鼠标按下事件，用于移动窗口或调整高度"""
         if event.button() == Qt.LeftButton:
+            # 检查是否在高度调整条上
+            if self.height_handle.geometry().contains(event.pos()):
+                self.resize_direction = "height_handle"
+                self.drag_position = event.globalPos()
+                self.original_height = self.height()
+                event.accept()
+                return
+                
             # 检查是否在边缘区域（用于调整大小）
             pos = event.pos()
             width, height = self.width(), self.height()
@@ -381,12 +406,35 @@ class SubtitleWindow(QWidget):
                 # 不在边缘，准备移动窗口
                 self.resize_direction = None
                 self.drag_position = event.globalPos() - self.frameGeometry().topLeft()
+                
+                # 记录点击次数和时间，用于检测三击
+                current_time = QTimer.currentTime()
+                if not hasattr(self, 'last_click_time') or current_time.msecsTo(self.last_click_time) < -500:
+                    # 如果超过500毫秒，重置点击计数
+                    self.click_count = 1
+                else:
+                    # 否则增加点击计数
+                    self.click_count += 1
+                    
+                # 如果是三击，隐藏控制面板
+                if self.click_count == 3:
+                    self.control_panel.setVisible(False)
+                    self.click_count = 0
+                
+                self.last_click_time = current_time
+                
             event.accept()
     
     def mouseMoveEvent(self, event):
         """鼠标移动事件，用于移动或调整窗口大小"""
         if event.buttons() == Qt.LeftButton:
-            if self.resize_direction:
+            if self.resize_direction == "height_handle":
+                # 调整文本区域高度
+                delta_y = event.globalPos().y() - self.drag_position.y()
+                new_height = max(self.minimumHeight(), self.original_height + delta_y)
+                self.resize(self.width(), new_height)
+                self.drag_position = event.globalPos()
+            elif self.resize_direction:
                 # 调整窗口大小
                 self.resize_window(event.globalPos())
             elif hasattr(self, 'drag_position'):
@@ -548,10 +596,6 @@ class SubtitleWindow(QWidget):
                 pos = event.pos()
                 if not self.rect().contains(pos):
                     self.control_panel.setVisible(False)
-                return True
-            # 处理鼠标双击事件
-            elif event.type() == QEvent.MouseButtonDblClick:
-                self.control_panel.setVisible(not self.control_panel.isVisible())
                 return True
         
         return super().eventFilter(obj, event)
