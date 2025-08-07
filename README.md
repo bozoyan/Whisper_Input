@@ -1,13 +1,17 @@
 # Whisper Input
 
-受到 ErlichLiu/Whisper-Input启发，修改的 Whisper Input 可以实现按下 Option 按钮开始录制，抬起按钮就结束录制，并调用 Groq `Whisper Large V3 Turbo` 模型进行转译，由于 Groq 的速度非常快，所以大部分的语音输入都可以在 1-2s 内反馈。并且得益于 whisper 的强大能力，转译效果非常不错。
+受到 ErlichLiu/Whisper-Input 启发，修改的 Whisper Input 可以实现按下 Option 按钮开始录制，抬起按钮就结束录制，并调用 Groq `Whisper Large V3 Turbo` 模型进行转译，由于 Groq 的速度非常快，所以大部分的语音输入都可以在 1-2s 内反馈。并且得益于 whisper 的强大能力，转译效果非常不错。
 
 - 转译的文本能自动显示成字幕形式。
 
 - 支持由 SiliconFlow 托管的 `FunAudioLLM/SenseVoiceSmall` 模型，速度比 Groq 托管的 `Whisper Large V3 Turbo` 更快，识别更准确，并且自带标点符号。**最重要的是普通用户也无用量限制！**
 
-## 当前阶段工作（20250807 更新）
-当前阶段正在构建一个简易的 macOS 客户端。考虑到使用这个项目的大部分用户都是非程序员背景的，并且通常大量依赖语音输入功能的用户也有一部分是视力障碍用户，所以近期在着重做 macOS 客户端以及无障碍开发，未来将上线网站对外公布 macOS 客户端。如果你对 Windows 客户端的开发以及无障碍开发有经验和兴趣，欢迎与我联系：微信 bozoyan。
+## 欢迎与我联系：微信 bozoyan
+
+![image-3](pic/3.png)
+![image-0](pic/0.png)
+![image-1](pic/1.png)
+![image-2](pic/2.png)
 
 ## 功能
 
@@ -126,12 +130,6 @@
 
 **🎉  此时你就可以按下 Option 按钮开始语音识别录入啦！**
 
-
-
-![image-3](pic/3.png)
-![image-0](pic/0.png)
-![image-1](pic/1.png)
-![image-2](pic/2.png)
 
 ## Tips
 
