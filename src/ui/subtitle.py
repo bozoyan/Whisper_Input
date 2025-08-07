@@ -85,6 +85,26 @@ class SubtitleWindow(QWidget):
         self.clear_btn.clicked.connect(self.clear_history)
         control_layout.addWidget(self.clear_btn)
         
+        # 创建保存按钮
+        self.save_btn = QPushButton("保存")
+        self.save_btn.setFixedSize(60, 25)
+        self.save_btn.setStyleSheet("""
+            QPushButton {
+                background-color: rgba(76, 175, 80, 180);
+                color: white;
+                border-radius: 4px;
+                font-size: 12px;
+            }
+            QPushButton:hover {
+                background-color: rgba(76, 175, 80, 220);
+            }
+            QPushButton:pressed {
+                background-color: rgba(76, 175, 80, 250);
+            }
+        """)
+        self.save_btn.clicked.connect(self.save_to_file)
+        control_layout.addWidget(self.save_btn)
+        
         # 创建透明度控制
         opacity_layout = QHBoxLayout()
         opacity_label = QLabel("透明度:")
