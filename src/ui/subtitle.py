@@ -1,7 +1,8 @@
 import sys
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QTextEdit, QApplication, QMenu, 
-                            QPushButton, QHBoxLayout, QSlider, QLabel, QFileDialog, QMessageBox)
-from PyQt5.QtCore import Qt, QTimer, QPoint
+                            QPushButton, QHBoxLayout, QSlider, QLabel, QFileDialog, QMessageBox,
+                            QFrame)
+from PyQt5.QtCore import Qt, QTimer, QPoint, QEvent
 from PyQt5.QtGui import QFont, QContextMenuEvent
 import os
 import pyperclip
@@ -30,6 +31,9 @@ class SubtitleWindow(QWidget):
         self.setAttribute(Qt.WA_ShowWithoutActivating, True)  # 显示但不激活
         self.setAttribute(Qt.WA_AlwaysStackOnTop, True)  # 确保窗口始终在最上层
         
+        # 安装事件过滤器以监听鼠标事件
+        self.installEventFilter(self)
+        
         # 设置窗口位置和大小为1200x300，并允许调整大小
         self.setGeometry(100, 100, 1200, 300)
         self.setMinimumSize(1200, 300)  # 设置最小尺寸，防止窗口过小
@@ -40,9 +44,19 @@ class SubtitleWindow(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
         
+        # 创建控制面板容器
+        self.control_panel = QFrame()
+        self.control_panel.setObjectName("controlPanel")
+        self.control_panel.setStyleSheet("""
+            #controlPanel {
+                background-color: rgba(0, 0, 0, 120);
+                border-bottom: 1px solid rgba(255, 255, 255, 30);
+            }
+        """)
+        
         # 创建控制按钮布局
-        control_layout = QHBoxLayout()
-        control_layout.setContentsMargins(10, 5, 10, 0)
+        control_layout = QHBoxLayout(self.control_panel)
+        control_layout.setContentsMargins(10, 5, 10, 5)
         
         # 创建置顶按钮
         self.always_on_top_btn = QPushButton("置顶")
@@ -186,7 +200,7 @@ class SubtitleWindow(QWidget):
         self.hide_btn.clicked.connect(self.hide)
         control_layout.addWidget(self.hide_btn)
         
-        main_layout.addLayout(control_layout)
+        main_layout.addWidget(self.control_panel)
         
         # 创建文本布局
         text_layout = QVBoxLayout()
@@ -522,12 +536,35 @@ class SubtitleWindow(QWidget):
         elif action == save_action:
             self.save_to_file()
 
+    def eventFilter(self, obj, event):
+        """事件过滤器，用于处理鼠标事件"""
+        if obj is self:
+            # 处理鼠标进入和离开事件
+            if event.type() == QEvent.Enter:
+                self.control_panel.setVisible(True)
+                return True
+            elif event.type() == QEvent.Leave:
+                # 只有当鼠标真正离开窗口时才隐藏控制面板
+                pos = event.pos()
+                if not self.rect().contains(pos):
+                    self.control_panel.setVisible(False)
+                return True
+            # 处理鼠标双击事件
+            elif event.type() == QEvent.MouseButtonDblClick:
+                self.control_panel.setVisible(not self.control_panel.isVisible())
+                return True
+        
+        return super().eventFilter(obj, event)
+    
     def showEvent(self, event):
         """窗口显示事件"""
         super().showEvent(event)
         # 确保窗口在显示时置顶
         if self.is_always_on_top:
             QTimer.singleShot(100, self.ensure_top_most)
+        
+        # 初始隐藏控制面板，等待鼠标进入或双击
+        QTimer.singleShot(500, lambda: self.control_panel.setVisible(False))
 
 # 测试代码
 if __name__ == "__main__":
