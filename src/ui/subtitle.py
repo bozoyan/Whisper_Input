@@ -30,9 +30,9 @@ class SubtitleWindow(QWidget):
         self.setAttribute(Qt.WA_ShowWithoutActivating, True)  # 显示但不激活
         self.setAttribute(Qt.WA_AlwaysStackOnTop, True)  # 确保窗口始终在最上层
         
-        # 设置窗口位置和大小为800x300，并允许调整大小
-        self.setGeometry(100, 100, 1000, 300)
-        self.setMinimumSize(1000, 300)  # 设置最小尺寸，防止窗口过小
+        # 设置窗口位置和大小为1200x300，并允许调整大小
+        self.setGeometry(100, 100, 1200, 300)
+        self.setMinimumSize(1200, 300)  # 设置最小尺寸，防止窗口过小
         self.setMouseTracking(True)  # 启用鼠标跟踪以支持调整大小
         
         # 创建主布局
