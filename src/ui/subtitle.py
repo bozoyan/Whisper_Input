@@ -34,9 +34,9 @@ class SubtitleWindow(QWidget):
         # 安装事件过滤器以监听鼠标事件
         self.installEventFilter(self)
         
-        # 设置窗口位置和大小为1200x300，并允许调整大小
-        self.setGeometry(100, 100, 1200, 300)
-        self.setMinimumSize(1200, 300)  # 设置最小尺寸，防止窗口过小
+        # 设置窗口位置和大小为1200x400，并允许调整大小
+        self.setGeometry(100, 100, 1200, 400)
+        self.setMinimumSize(1200, 400)  # 设置最小尺寸，防止窗口过小
         self.setMouseTracking(True)  # 启用鼠标跟踪以支持调整大小
         
         # 创建主布局
@@ -46,7 +46,13 @@ class SubtitleWindow(QWidget):
         
         # 创建文本布局
         text_layout = QVBoxLayout()
-        text_layout.setContentsMargins(20, 10, 20, 10)
+        # 设置默认边距
+        self.text_margin_left = 20
+        self.text_margin_top = 10
+        self.text_margin_right = 20
+        self.text_margin_bottom = 10
+        text_layout.setContentsMargins(self.text_margin_left, self.text_margin_top, 
+                                      self.text_margin_right, self.text_margin_bottom)
         
         # 创建文本显示区域
         self.text_edit = QTextEdit()
@@ -210,6 +216,35 @@ class SubtitleWindow(QWidget):
         
         control_layout.addLayout(history_layout)
         
+        # 创建边距控制
+        margin_layout = QHBoxLayout()
+        margin_label = QLabel("边距:")
+        margin_label.setStyleSheet("color: white; font-size: 12px;")
+        margin_layout.addWidget(margin_label)
+        
+        self.margin_slider = QSlider(Qt.Horizontal)
+        self.margin_slider.setRange(0, 100)  # 0-100px边距
+        self.margin_slider.setValue(20)  # 默认20px
+        self.margin_slider.setFixedWidth(80)
+        self.margin_slider.setStyleSheet("""
+            QSlider::groove:horizontal {
+                height: 4px;
+                background: #555;
+                border-radius: 2px;
+            }
+            QSlider::handle:horizontal {
+                background: white;
+                border: 1px solid #777;
+                width: 10px;
+                margin: -3px 0;
+                border-radius: 5px;
+            }
+        """)
+        self.margin_slider.valueChanged.connect(self.change_text_margin)
+        margin_layout.addWidget(self.margin_slider)
+        
+        control_layout.addLayout(margin_layout)
+        
         # 添加弹性空间
         control_layout.addStretch()
         
@@ -350,6 +385,23 @@ class SubtitleWindow(QWidget):
             # 更新显示
             display_text = '\n'.join(self.text_history)
             self.text_edit.setPlainText(display_text)
+            
+    def change_text_margin(self, value):
+        """改变文本区域边距"""
+        # 更新边距值
+        self.text_margin_left = value
+        self.text_margin_right = value
+        
+        # 获取当前布局
+        layout = self.layout()
+        text_layout = layout.itemAt(0).layout()
+        
+        # 设置新的边距
+        text_layout.setContentsMargins(self.text_margin_left, self.text_margin_top, 
+                                      self.text_margin_right, self.text_margin_bottom)
+        
+        # 更新布局
+        self.update()
     
     def ensure_top_most(self):
         """确保窗口始终在最前面"""
@@ -408,8 +460,8 @@ class SubtitleWindow(QWidget):
                 self.drag_position = event.globalPos() - self.frameGeometry().topLeft()
                 
                 # 记录点击次数和时间，用于检测三击
-                current_time = QTimer.currentTime()
-                if not hasattr(self, 'last_click_time') or current_time.msecsTo(self.last_click_time) < -500:
+                current_time = datetime.datetime.now()
+                if not hasattr(self, 'last_click_time') or (current_time - self.last_click_time).total_seconds() > 0.5:
                     # 如果超过500毫秒，重置点击计数
                     self.click_count = 1
                 else:
@@ -592,10 +644,8 @@ class SubtitleWindow(QWidget):
                 self.control_panel.setVisible(True)
                 return True
             elif event.type() == QEvent.Leave:
-                # 只有当鼠标真正离开窗口时才隐藏控制面板
-                pos = event.pos()
-                if not self.rect().contains(pos):
-                    self.control_panel.setVisible(False)
+                # 鼠标离开窗口时隐藏控制面板
+                self.control_panel.setVisible(False)
                 return True
         
         return super().eventFilter(obj, event)
