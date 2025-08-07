@@ -1,0 +1,14 @@
+pynput 
+openai
+pip-tools
+pyqt5
+python-dotenv
+sounddevice
+numpy
+pyperclip
+soundfile
+colorlog
+openai
+httpx
+requests
+opencc-python-reimplemented
