@@ -1,13 +1,13 @@
 # Whisper Input
 
-Whisper Input 可以实现按下 Option 按钮开始录制，抬起按钮就结束录制，并调用 Groq `Whisper Large V3 Turbo` 模型进行转译，由于 Groq 的速度非常快，所以大部分的语音输入都可以在 1-2s 内反馈。并且得益于 whisper 的强大能力，转译效果非常不错。
+受到 ErlichLiu/Whisper-Input启发，修改的 Whisper Input 可以实现按下 Option 按钮开始录制，抬起按钮就结束录制，并调用 Groq `Whisper Large V3 Turbo` 模型进行转译，由于 Groq 的速度非常快，所以大部分的语音输入都可以在 1-2s 内反馈。并且得益于 whisper 的强大能力，转译效果非常不错。
 
-- 🎉🎉由于目前已经发现了更好用的语音输入软件[WhisperKeyBoard](https://whisperkeyboard.app/)，非常推荐大家可以直接使用这款软件即可。Whisper Input 的中心将继续回到 Voice + Agents 上。
+- 转译的文本能自动显示成字幕形式。
 
 - 支持由 SiliconFlow 托管的 `FunAudioLLM/SenseVoiceSmall` 模型，速度比 Groq 托管的 `Whisper Large V3 Turbo` 更快，识别更准确，并且自带标点符号。**最重要的是普通用户也无用量限制！**
 
-## 当前阶段工作（20250129 更新）
-当前阶段正在构建一个简易的 macOS 客户端。考虑到使用这个项目的大部分用户都是非程序员背景的，并且通常大量依赖语音输入功能的用户也有一部分是视力障碍用户，所以近期在着重做 macOS 客户端以及无障碍开发，未来将上线网站对外公布 macOS 客户端。如果你对 Windows 客户端的开发以及无障碍开发有经验和兴趣，欢迎与我联系：微信 geekthings。
+## 当前阶段工作（20250807 更新）
+当前阶段正在构建一个简易的 macOS 客户端。考虑到使用这个项目的大部分用户都是非程序员背景的，并且通常大量依赖语音输入功能的用户也有一部分是视力障碍用户，所以近期在着重做 macOS 客户端以及无障碍开发，未来将上线网站对外公布 macOS 客户端。如果你对 Windows 客户端的开发以及无障碍开发有经验和兴趣，欢迎与我联系：微信 bozoyan。
 
 ## 功能
 
@@ -34,11 +34,11 @@ Whisper Input 可以实现按下 Option 按钮开始录制，抬起按钮就结�
 #### 3.13.1会有光标切换窗口报错的问题，这是个known issue，暂无解决方案，3.12.5无报错
 
 ### FunAudioLLM/SenseVoiceSmall 模型配置方法
-1. 注册 SiliconFlow 账户：https://cloud.siliconflow.cn/i/RXikvHE2
+1. 注册 SiliconFlow 账户：https://cloud.siliconflow.cn/i/em42mVN6
 2. 创建并复制免费的 API KEY：https://cloud.siliconflow.cn/account/ak
 3. 打开 `终端` ，进入到想要下载项目的文件夹
     ```bash
-    git clone git@github.com:ErlichLiu/Whisper-Input.git
+    git clone git@github.com:bozoyan/Whisper_Input.git
     ```
 4. 创建虚拟环境 【推荐】
     ```bash
@@ -83,7 +83,7 @@ Whisper Input 可以实现按下 Option 按钮开始录制，抬起按钮就结�
 2. 复制 Groq 免费的 API KEY：https://console.groq.com/keys
 3. 打开 `终端` ，进入到想要下载项目的文件夹
     ```bash
-    git clone git@github.com:ErlichLiu/Whisper-Input.git
+    git clone git@github.com:bozoyan/Whisper_Input.git
     ```
 4. 创建虚拟环境 【推荐】
     ```bash
@@ -128,7 +128,10 @@ Whisper Input 可以实现按下 Option 按钮开始录制，抬起按钮就结�
 
 
 
-![image-20250111140954085](https://img.erlich.fun/personal-blog/uPic/image-20250111140954085.png)
+![image-3](pic/3.png)
+![image-0](pic/0.png)
+![image-1](pic/1.png)
+![image-2](pic/2.png)
 
 ## Tips
 

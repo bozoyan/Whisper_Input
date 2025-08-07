@@ -53,7 +53,7 @@ class ControlUI(QWidget):
         
     def init_ui(self):
         """初始化界面"""
-        self.setWindowTitle('BOZOYAN 语音控制面板 V2.3.0')
+        self.setWindowTitle('BOZOYAN 语音控制面板 V3.0.0')
         self.setGeometry(300, 300, 1200, 800)
         
         # 设置窗口样式

@@ -407,7 +407,7 @@ class SubtitleWindow(QWidget):
         """确保窗口始终在最前面"""
         if self.is_always_on_top and self.isVisible():
             self.raise_()
-            self.activateWindow()
+            # 不再调用activateWindow()，因为窗口设置了Qt.WindowDoesNotAcceptFocus
     
     def adjust_font_size(self):
         """根据窗口大小调整字体大小"""
@@ -653,11 +653,11 @@ class SubtitleWindow(QWidget):
     def showEvent(self, event):
         """窗口显示事件"""
         super().showEvent(event)
-        # 确保窗口在显示时置顶
+        # 确保窗口在显示时置顶，但不激活
         if self.is_always_on_top:
-            QTimer.singleShot(100, self.ensure_top_most)
+            QTimer.singleShot(100, lambda: self.raise_())
         
-        # 初始隐藏控制面板，等待鼠标进入或双击
+        # 初始隐藏控制面板，等待鼠标进入或三击
         QTimer.singleShot(500, lambda: self.control_panel.setVisible(False))
 
 # 测试代码
